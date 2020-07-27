@@ -7,7 +7,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.devzyra.restwebservice.config.filters.AuthenticationFilter;
 import pl.devzyra.restwebservice.services.UserService;
+
+import static pl.devzyra.restwebservice.config.SecurityConstants.SING_UP_URL;
 
 @Configuration
 @EnableWebSecurity
@@ -26,9 +29,11 @@ private final PasswordEncoder passwordEncoder;
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/users")
+                .antMatchers(HttpMethod.POST, SING_UP_URL)
                 .permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .addFilter(new AuthenticationFilter(authenticationManager()));
     }
 
 

@@ -8,8 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
-import pl.devzyra.restwebservice.config.SpringApplictionContext;
+import pl.devzyra.restwebservice.config.SpringApplicationContext;
 import pl.devzyra.restwebservice.dto.UserDto;
 import pl.devzyra.restwebservice.model.request.UserLoginRequestModel;
 import pl.devzyra.restwebservice.services.UserService;
@@ -65,7 +64,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                            .compact();
 
 
-        UserService userService = (UserService) SpringApplictionContext.getBean("userServiceImpl");
+        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
 
         UserDto userDto = userService.getUser(authResult.getName());
 

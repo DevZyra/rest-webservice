@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.devzyra.restwebservice.config.filters.AuthenticationFilter;
+import pl.devzyra.restwebservice.config.filters.VerificationFilter;
 import pl.devzyra.restwebservice.services.UserService;
 
 import static pl.devzyra.restwebservice.config.SecurityConstants.SING_UP_URL;
@@ -33,7 +34,8 @@ private final PasswordEncoder passwordEncoder;
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager()));
+                .addFilter(new AuthenticationFilter(authenticationManager()))
+                .addFilterAfter(new VerificationFilter(authenticationManager()),AuthenticationFilter.class);
     }
 
 

@@ -11,6 +11,7 @@ import pl.devzyra.restwebservice.config.filters.AuthenticationFilter;
 import pl.devzyra.restwebservice.config.filters.VerificationFilter;
 import pl.devzyra.restwebservice.services.UserService;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static pl.devzyra.restwebservice.config.SecurityConstants.SING_UP_URL;
 
 @Configuration
@@ -35,7 +36,9 @@ private final PasswordEncoder passwordEncoder;
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new AuthenticationFilter(authenticationManager()))
-                .addFilterAfter(new VerificationFilter(authenticationManager()),AuthenticationFilter.class);
+                .addFilterAfter(new VerificationFilter(authenticationManager()),AuthenticationFilter.class)
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS);
     }
 
 

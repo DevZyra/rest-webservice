@@ -1,6 +1,7 @@
 package pl.devzyra.restwebservice.controllers;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.devzyra.restwebservice.dto.UserDto;
 import pl.devzyra.restwebservice.model.request.UserDetailsRequestModel;
@@ -17,7 +18,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping(value = "/{userId}" , produces = {MediaType.APPLICATION_JSON_VALUE,
+                                                  MediaType.APPLICATION_XML_VALUE   })
     public UserRest getUser(@PathVariable String userId){
 
         UserRest returnVal = new UserRest();
@@ -29,7 +31,8 @@ public class UserController {
     }
 
 
-    @PostMapping
+    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+                 produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails){
 
         UserRest returnValue = new UserRest();

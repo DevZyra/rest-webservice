@@ -4,9 +4,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.devzyra.restwebservice.dto.UserDto;
+import pl.devzyra.restwebservice.exceptions.ErrorMessages;
+import pl.devzyra.restwebservice.exceptions.UserServiceException;
 import pl.devzyra.restwebservice.model.request.UserDetailsRequestModel;
 import pl.devzyra.restwebservice.model.response.UserRest;
 import pl.devzyra.restwebservice.services.UserService;
+
+import static pl.devzyra.restwebservice.exceptions.ErrorMessages.MISSING_REQUIRED_FIELDS;
 
 @RestController
 @RequestMapping("users")
@@ -36,6 +40,8 @@ public class UserController {
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails){
 
         UserRest returnValue = new UserRest();
+
+        if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(MISSING_REQUIRED_FIELDS.getErrorMessage());
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails,userDto);

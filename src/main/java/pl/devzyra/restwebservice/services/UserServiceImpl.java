@@ -8,10 +8,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.devzyra.restwebservice.dto.UserDto;
 import pl.devzyra.restwebservice.dto.Utils;
+import pl.devzyra.restwebservice.exceptions.ErrorMessages;
+import pl.devzyra.restwebservice.exceptions.UserServiceException;
 import pl.devzyra.restwebservice.model.entities.UserEntity;
 import pl.devzyra.restwebservice.repositories.UserRepository;
 
 import java.util.ArrayList;
+
+import static pl.devzyra.restwebservice.exceptions.ErrorMessages.RECORD_ALREADY_EXISTS;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -32,7 +36,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto user) {
 
         if( userRepository.findByEmail(user.getEmail()) != null){
-            throw new RuntimeException(" This email is already registered");
+            throw new UserServiceException(RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
         UserEntity userEntity = new UserEntity();

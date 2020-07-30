@@ -15,6 +15,7 @@ import pl.devzyra.restwebservice.repositories.UserRepository;
 
 import java.util.ArrayList;
 
+import static pl.devzyra.restwebservice.exceptions.ErrorMessages.NO_RECORD_FOUND;
 import static pl.devzyra.restwebservice.exceptions.ErrorMessages.RECORD_ALREADY_EXISTS;
 
 @Service
@@ -75,6 +76,30 @@ public class UserServiceImpl implements UserService {
 
         return returnValue;
 
+    }
+
+    @Override
+    public UserDto updateUser(String userId, UserDto user) {
+       UserDto returnValue = new UserDto();
+       UserEntity userEntity = userRepository.findUserEntityByUserId(userId);
+
+       if(userEntity == null) throw new UsernameNotFoundException(String.format("User [ID] -> %s not found",userId));
+
+       if(user.getFirstName() != null ){
+       userEntity.setFirstName(user.getFirstName()); }
+
+       if(user.getLastName() != null ){
+       userEntity.setLastName(user.getLastName());
+       }
+
+       if(user.getPassword() != null ){
+       userEntity.setEncryptedPassword(passwordEncoder.encode(user.getPassword()));
+       }
+
+       UserEntity savedEntity = userRepository.save(userEntity);
+       BeanUtils.copyProperties(savedEntity,returnValue);
+
+        return returnValue;
     }
 
 

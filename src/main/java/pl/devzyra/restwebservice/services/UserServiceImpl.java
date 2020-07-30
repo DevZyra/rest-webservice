@@ -1,6 +1,9 @@
 package pl.devzyra.restwebservice.services;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,9 +14,11 @@ import pl.devzyra.restwebservice.dto.Utils;
 import pl.devzyra.restwebservice.exceptions.ErrorMessages;
 import pl.devzyra.restwebservice.exceptions.UserServiceException;
 import pl.devzyra.restwebservice.model.entities.UserEntity;
+import pl.devzyra.restwebservice.model.response.UserRest;
 import pl.devzyra.restwebservice.repositories.UserRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static pl.devzyra.restwebservice.exceptions.ErrorMessages.NO_RECORD_FOUND;
 import static pl.devzyra.restwebservice.exceptions.ErrorMessages.RECORD_ALREADY_EXISTS;
@@ -108,6 +113,24 @@ public class UserServiceImpl implements UserService {
         if(userEntity == null){ throw new UsernameNotFoundException(String.format("User [ID]-> %s",userId)); }
 
         userRepository.delete(userEntity);
+    }
+
+    @Override
+    public List<UserDto> getUsers(int page, int limit) {
+        List<UserDto> returnValue = new ArrayList<>();
+
+        Pageable pageableRequest = PageRequest.of(page,limit);
+        Page<UserEntity> userPage = userRepository.findAll(pageableRequest);
+
+        List<UserEntity> users = userPage.getContent();
+
+        users.stream().forEach(x-> {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(x,userDto);
+            returnValue.add(userDto);
+        });
+
+        return returnValue;
     }
 
 

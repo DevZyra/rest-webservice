@@ -102,11 +102,19 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
+    @Override
+    public void deleteUser(String userId) {
+        UserEntity userEntity = userRepository.findUserEntityByUserId(userId);
+        if(userEntity == null){ throw new UsernameNotFoundException(String.format("User [ID]-> %s",userId)); }
+
+        userRepository.delete(userEntity);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
       UserEntity userEntity = userRepository.findByEmail(email);
-      if(userEntity == null){ throw new UsernameNotFoundException(String.format("[USER] -> %s",email)); }
+      if(userEntity == null){ throw new UsernameNotFoundException(String.format("User [EMAIL] -> %s",email)); }
 
       return new User(userEntity.getEmail(),userEntity.getEncryptedPassword(),new ArrayList<>());
     }

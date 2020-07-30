@@ -7,8 +7,11 @@ import pl.devzyra.restwebservice.dto.UserDto;
 import pl.devzyra.restwebservice.exceptions.ErrorMessages;
 import pl.devzyra.restwebservice.exceptions.UserServiceException;
 import pl.devzyra.restwebservice.model.request.UserDetailsRequestModel;
+import pl.devzyra.restwebservice.model.response.OperationStatus;
 import pl.devzyra.restwebservice.model.response.UserRest;
 import pl.devzyra.restwebservice.services.UserService;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static pl.devzyra.restwebservice.exceptions.ErrorMessages.MISSING_REQUIRED_FIELDS;
 
@@ -72,9 +75,17 @@ public class UserController {
     }
 
 
-    @DeleteMapping
-    public String deleteUser(){
-        return "[DELETE] user called";
+    @DeleteMapping(value = "/{userId}", produces ={ MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public OperationStatus deleteUser(@PathVariable String userId){
+
+        OperationStatus operationStatus = new OperationStatus();
+        operationStatus.setMethod("DELETE");
+
+        userService.deleteUser(userId);
+
+        operationStatus.setStatus("SUCCESS");
+
+        return operationStatus;
     }
 
 

@@ -1,19 +1,19 @@
 package pl.devzyra.restwebservice.model.entities;
 
-import lombok.AccessLevel;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity(name = "users")
 public class UserEntity implements Serializable {
 
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
+
     private static final long serialVersionUID = 5370386224448597536L;
 
     @Id
@@ -40,4 +40,7 @@ public class UserEntity implements Serializable {
     @Column(nullable = false/* , columnDefinition = "boolean default false" */)
     private Boolean emailVerificationStatus = false;
 
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<AddressEntity> addresses;
 }

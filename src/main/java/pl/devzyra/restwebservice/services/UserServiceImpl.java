@@ -1,5 +1,6 @@
 package pl.devzyra.restwebservice.services;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,18 +10,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.devzyra.restwebservice.dto.AddressDto;
 import pl.devzyra.restwebservice.dto.UserDto;
 import pl.devzyra.restwebservice.dto.Utils;
-import pl.devzyra.restwebservice.exceptions.ErrorMessages;
 import pl.devzyra.restwebservice.exceptions.UserServiceException;
 import pl.devzyra.restwebservice.model.entities.UserEntity;
-import pl.devzyra.restwebservice.model.response.UserRest;
 import pl.devzyra.restwebservice.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.devzyra.restwebservice.exceptions.ErrorMessages.NO_RECORD_FOUND;
 import static pl.devzyra.restwebservice.exceptions.ErrorMessages.RECORD_ALREADY_EXISTS;
 
 @Service
@@ -29,11 +28,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final Utils utils;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository, Utils utils, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, Utils utils, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.utils = utils;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
     }
 
 
@@ -45,8 +46,16 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException(RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(user,userEntity);
+        for(int i=0;i<user.getAddresses().size();i++){
+            AddressDto address = user.getAddresses().get(i);
+            address.setUserDetails(user);
+            address.setAddressId(utils.generateAddressId(20));
+            user.getAddresses().set(i,address);
+        }
+
+
+        UserEntity userEntity = modelMapper.map(user,UserEntity.class);
+
 
         userEntity.setUserId(utils.generateUserId(15));
         userEntity.setEncryptedPassword(passwordEncoder.encode(user.getPassword()));
@@ -54,8 +63,7 @@ public class UserServiceImpl implements UserService {
 
         UserEntity stored = userRepository.save(userEntity);
 
-        UserDto returnValue = new UserDto();
-        BeanUtils.copyProperties(stored,returnValue);
+        UserDto returnValue = modelMapper.map(stored,UserDto.class);
 
         return returnValue;
     }

@@ -1,17 +1,15 @@
 package pl.devzyra.restwebservice.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.devzyra.restwebservice.dto.UserDto;
-import pl.devzyra.restwebservice.exceptions.ErrorMessages;
 import pl.devzyra.restwebservice.exceptions.UserServiceException;
 import pl.devzyra.restwebservice.model.request.UserDetailsRequestModel;
 import pl.devzyra.restwebservice.model.response.OperationStatus;
 import pl.devzyra.restwebservice.model.response.UserRest;
 import pl.devzyra.restwebservice.services.UserService;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +21,11 @@ import static pl.devzyra.restwebservice.exceptions.ErrorMessages.MISSING_REQUIRE
 public class UserController {
 
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ModelMapper modelMapper) {
         this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
 
@@ -69,12 +69,14 @@ public class UserController {
 
         if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(MISSING_REQUIRED_FIELDS.getErrorMessage());
 
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetails,userDto);
+      /*  UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userDetails,userDto);*/
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails,UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
+        returnValue = modelMapper.map(createdUser, UserRest.class);
 
-        BeanUtils.copyProperties(createdUser,returnValue);
 
 
         return returnValue;

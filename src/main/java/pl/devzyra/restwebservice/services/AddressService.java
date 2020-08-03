@@ -9,4 +9,5 @@ public interface AddressService {
 
     List<AddressDto> getAddresses(String userId);
 
+    AddressDto getSpecificAddress(String addressId);
 }

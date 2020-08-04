@@ -168,4 +168,6 @@ public class UserController {
         return EntityModel.of(returnValue, Arrays.asList(userLink, addressesLink, self));
 
     }
+
+
 }

@@ -20,6 +20,10 @@ private final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk
         return generateRandomString(length);
     }
 
+    public String generateVerificationToken(int length){
+        return generateRandomString(length);
+    }
+
     private String generateRandomString(int length){
         StringBuilder returnVal = new StringBuilder(length);
 

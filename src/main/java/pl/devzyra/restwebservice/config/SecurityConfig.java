@@ -33,6 +33,8 @@ private final PasswordEncoder passwordEncoder;
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SING_UP_URL)
                 .permitAll()
+                .antMatchers("/activation")
+                .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new AuthenticationFilter(authenticationManager()))

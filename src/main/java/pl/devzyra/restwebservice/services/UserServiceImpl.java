@@ -29,12 +29,17 @@ public class UserServiceImpl implements UserService {
     private final Utils utils;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final VerificationTokenService verificationTokenService;
+    private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository, Utils utils, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+
+    public UserServiceImpl(UserRepository userRepository, Utils utils, PasswordEncoder passwordEncoder, ModelMapper modelMapper, VerificationTokenService verificationTokenService, EmailService emailService) {
         this.userRepository = userRepository;
         this.utils = utils;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
+        this.verificationTokenService = verificationTokenService;
+        this.emailService = emailService;
     }
 
 
@@ -59,6 +64,22 @@ public class UserServiceImpl implements UserService {
 
         userEntity.setUserId(utils.generateUserId(15));
         userEntity.setEncryptedPassword(passwordEncoder.encode(user.getPassword()));
+
+        // set email verification to false
+        userEntity.setEmailVerificationStatus(false);
+
+        // create and save token
+        try{
+            String token = utils.generateVerificationToken(25);
+            verificationTokenService.save(userEntity,token);
+
+        // send verification email
+        emailService.sendHtmlMail(userEntity);
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
 
         UserEntity stored = userRepository.save(userEntity);
@@ -139,6 +160,11 @@ public class UserServiceImpl implements UserService {
         });
 
         return returnValue;
+    }
+
+    @Override
+    public void save(UserEntity userEntity) {
+        userRepository.save(userEntity);
     }
 
 
